@@ -2,6 +2,7 @@ package com.pablozoani.service;
 
 import com.pablozoani.api.v1.mapper.VendorMapper;
 import com.pablozoani.api.v1.model.VendorDTO;
+import com.pablozoani.domain.Vendor;
 import com.pablozoani.repository.VendorRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -27,5 +28,12 @@ public class VendorServiceImpl implements VendorService {
         return vendorRepository.findAll().stream()
                 .map(vendor -> vendorMapper.vendorToDto(vendor))
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public VendorDTO createVendor(VendorDTO vendorDTO) {
+        Vendor vendor = vendorMapper.dtoToVendor(vendorDTO);
+        Vendor savedVendor = vendorRepository.save(vendor);
+        return vendorMapper.vendorToDto(savedVendor);
     }
 }

@@ -20,4 +20,16 @@ class VendorMapperTest {
         assertEquals(vendor.getId(), vendorDto.getId());
         assertEquals(vendor.getName(), vendorDto.getName());
     }
+
+    @Test
+    void dtoToVendor() {
+        // given
+        VendorDTO vendor = new VendorDTO(null, "Western Tasty Fruits Ltd.");
+        // when
+        Vendor vendor1 = vendorMapper.dtoToVendor(vendor);
+        // then
+        assertNotNull(vendor1);
+        assertEquals(vendor.getId(), vendor1.getId());
+        assertEquals(vendor.getName(), vendor1.getName());
+    }
 }

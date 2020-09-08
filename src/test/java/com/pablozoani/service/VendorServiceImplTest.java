@@ -13,6 +13,7 @@ import java.util.List;
 
 import static java.util.Arrays.asList;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
@@ -44,5 +45,17 @@ class VendorServiceImplTest {
         // then
         assertEquals(3, vendorDTOS.size());
         vendorDTOS.forEach(Assertions::assertNotNull);
+    }
+
+    @Test
+    void createVendor() {
+        // given
+        Vendor vendor = new Vendor(null, "Nuts for Nuts Company");
+        // when
+        when(vendorRepository.save(any(Vendor.class))).thenReturn(vendor);
+        VendorDTO vendorDTO = vendorService.createVendor(vendorMapper.vendorToDto(vendor));
+        // then
+        assertNotNull(vendorDTO);
+        assertEquals(vendor.getName(), vendorDTO.getName());
     }
 }

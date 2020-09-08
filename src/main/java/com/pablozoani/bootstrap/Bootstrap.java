@@ -2,13 +2,17 @@ package com.pablozoani.bootstrap;
 
 import com.pablozoani.domain.Category;
 import com.pablozoani.domain.Customer;
+import com.pablozoani.domain.Vendor;
 import com.pablozoani.repository.CategoryRepository;
 import com.pablozoani.repository.CustomerRepository;
+import com.pablozoani.repository.VendorRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
 
 import static java.util.Arrays.asList;
 
@@ -21,16 +25,31 @@ public class Bootstrap implements CommandLineRunner {
 
     private final CustomerRepository customerRepository;
 
+    private final VendorRepository vendorRepository;
+
     @Autowired
-    public Bootstrap(CategoryRepository categoryRepository, CustomerRepository customerRepository) {
+    public Bootstrap(CategoryRepository categoryRepository,
+                     CustomerRepository customerRepository,
+                     VendorRepository vendorRepository) {
         this.categoryRepository = categoryRepository;
         this.customerRepository = customerRepository;
+        this.vendorRepository = vendorRepository;
     }
 
     @Override
     public void run(String[] args) {
         loadCategories();
         loadCustomers();
+        loadVendors();
+    }
+
+    private void loadVendors() {
+        Vendor vendor1 = new Vendor(null, "Exotic Fruits Company"),
+                vendor2 = new Vendor(null, "Home Fruits"),
+                vendor3 = new Vendor(null, "Fun Fresh Fruits Ltd."),
+                vendor4 = new Vendor(null, "Nuts for Nuts Company");
+        List<Vendor> vendors = asList(vendor1, vendor2, vendor3, vendor4);
+        vendorRepository.saveAll(vendors);
     }
 
     private void loadCategories() {
