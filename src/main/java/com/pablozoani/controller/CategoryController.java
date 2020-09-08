@@ -4,15 +4,15 @@ import com.pablozoani.api.v1.model.CategoryDTO;
 import com.pablozoani.api.v1.model.CategoryListDTO;
 import com.pablozoani.service.CategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
-@Controller
-@RequestMapping("/api/v1/categories")
+import static org.springframework.http.HttpStatus.OK;
+
+@RestController
+@RequestMapping(CategoryController.BASE_URL)
 public class CategoryController {
+
+    public static final String BASE_URL = "/api/v1/categories";
 
     private final CategoryService categoryService;
 
@@ -22,12 +22,14 @@ public class CategoryController {
     }
 
     @GetMapping
-    public ResponseEntity<CategoryListDTO> getAllCategories() {
-        return ResponseEntity.ok(new CategoryListDTO(categoryService.getAllCategories()));
+    @ResponseStatus(OK)
+    public CategoryListDTO getAllCategories() {
+        return new CategoryListDTO(categoryService.getAllCategories());
     }
 
+    @ResponseStatus(OK)
     @GetMapping("/{name}")
-    public ResponseEntity<CategoryDTO> getCategoryByName(@PathVariable String name) {
-        return ResponseEntity.ok(categoryService.getCategoryByName(name));
+    public CategoryDTO getCategoryByName(@PathVariable String name) {
+        return categoryService.getCategoryByName(name);
     }
 }
