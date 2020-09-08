@@ -23,11 +23,12 @@ import static java.util.Arrays.asList;
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 class VendorControllerTest {
@@ -87,5 +88,12 @@ class VendorControllerTest {
                 .andReturn().getResponse();
         VendorDTO vendor2 = objectMapper.readValue(response.getContentAsString(), VendorDTO.class);
         assertEquals(vendor, vendor2);
+    }
+
+    @Test
+    void deleteVendorById() throws Exception {
+        mockMvc.perform(delete(VendorController.BASE_URL + "/5"))
+                .andExpect(status().isOk());
+        verify(vendorService).deleteVendorById(anyLong());
     }
 }
