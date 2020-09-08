@@ -2,15 +2,16 @@ package com.pablozoani.api.v1.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
-import java.util.ArrayList;
-import java.util.List;
-
 @Data
+@EqualsAndHashCode(exclude = "id")
 @NoArgsConstructor
 @AllArgsConstructor
-public class CategoryListDTO {
+public class VendorDTO {
 
-    private List<CategoryDTO> categories = new ArrayList<>();
+    private Long id;
+
+    private String name;
 }
