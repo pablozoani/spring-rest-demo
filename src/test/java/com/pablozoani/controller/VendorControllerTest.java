@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.pablozoani.api.v1.mapper.VendorMapper;
 import com.pablozoani.api.v1.model.VendorDTO;
 import com.pablozoani.api.v1.model.VendorDTOList;
-import com.pablozoani.domain.Vendor;
 import com.pablozoani.service.VendorService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;

@@ -4,7 +4,8 @@ import com.pablozoani.api.v1.model.VendorDTO;
 import com.pablozoani.domain.Vendor;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 class VendorMapperTest {
 
