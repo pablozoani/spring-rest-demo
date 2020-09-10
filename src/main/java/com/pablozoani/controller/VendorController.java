@@ -26,6 +26,13 @@ public class VendorController {
         return new VendorDTOList(vendorService.getAllVendors());
     }
 
+    @GetMapping("/{id}")
+    @ResponseStatus(OK)
+    public VendorDTO getVendorById(@PathVariable Long id) {
+
+        return vendorService.getVendorById(id);
+    }
+
     @PostMapping
     @ResponseStatus(CREATED)
     public VendorDTO createVendor(@RequestBody VendorDTO vendorDTO) {
@@ -36,5 +43,17 @@ public class VendorController {
     @ResponseStatus(OK)
     public void deleteVendorById(@PathVariable Long id) {
         vendorService.deleteVendorById(id);
+    }
+
+    @PutMapping("/{id}")
+    @ResponseStatus(OK)
+    public VendorDTO updateVendor(@PathVariable Long id, @RequestBody VendorDTO vendorDTO) {
+        return vendorService.updateVendor(id, vendorDTO);
+    }
+
+    @PatchMapping("/{id}")
+    @ResponseStatus(OK)
+    public VendorDTO patchVendor(@PathVariable Long id, @RequestBody VendorDTO vendorDTO) {
+        return vendorService.patchVendor(id, vendorDTO);
     }
 }
