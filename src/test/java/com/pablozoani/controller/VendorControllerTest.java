@@ -2,6 +2,7 @@ package com.pablozoani.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.pablozoani.api.v1.mapper.VendorMapper;
 import com.pablozoani.api.v1.model.VendorDTO;
 import com.pablozoani.api.v1.model.VendorDTOList;
 import com.pablozoani.service.VendorService;
@@ -19,13 +20,19 @@ import java.util.List;
 
 import static java.util.Arrays.asList;
 import static org.hamcrest.Matchers.hasSize;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 class VendorControllerTest {
+
+    VendorMapper vendorMapper = VendorMapper.INSTANCE;
 
     @Mock
     VendorService vendorService;
@@ -62,5 +69,84 @@ class VendorControllerTest {
                 .andReturn().getResponse();
         objectMapper.readValue(response.getContentAsString(), VendorDTOList.class)
                 .getVendors().forEach(Assertions::assertNotNull);
+    }
+
+    @Test
+    void createVendor() throws Exception {
+        // given
+        VendorDTO vendor = new VendorDTO(null, "Western Tasty Fruits Ltd.");
+        // when
+        when(vendorService.createVendor(any(VendorDTO.class))).thenReturn(vendor);
+        ResultActions resultActions = mockMvc.perform(post(VendorController.BASE_URL)
+                .contentType(APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(vendor)));
+        // then
+        MockHttpServletResponse response = resultActions.andExpect(status().isCreated())
+                .andExpect(content().contentType(APPLICATION_JSON))
+                .andExpect(content().json(objectMapper.writeValueAsString(vendor)))
+                .andReturn().getResponse();
+        VendorDTO vendor2 = objectMapper.readValue(response.getContentAsString(), VendorDTO.class);
+        assertEquals(vendor, vendor2);
+    }
+
+    @Test
+    void deleteVendorById() throws Exception {
+        mockMvc.perform(delete(VendorController.BASE_URL + "/5"))
+                .andExpect(status().isOk());
+        verify(vendorService).deleteVendorById(anyLong());
+    }
+
+    @Test
+    void updateVendor() throws Exception {
+        // given
+        VendorDTO vendorDTO = new VendorDTO(null, "Western Tasty Fruits Ltd.");
+        // when
+        when(vendorService.updateVendor(anyLong(), any(VendorDTO.class))).thenReturn(vendorDTO);
+        ResultActions resultActions = mockMvc.perform(put(VendorController.BASE_URL + "/4")
+                .contentType(APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(vendorDTO)));
+        // then
+        MockHttpServletResponse response = resultActions.andExpect(status().isOk())
+                .andExpect(content().contentType(APPLICATION_JSON))
+                .andExpect(content().json(objectMapper.writeValueAsString(vendorDTO)))
+                .andReturn().getResponse();
+        VendorDTO vendorOutput = objectMapper.readValue(response.getContentAsString(), VendorDTO.class);
+        assertEquals(vendorDTO, vendorOutput);
+    }
+
+    @Test
+    void patchVendor() throws Exception {
+        // given
+        VendorDTO vendorDTO = new VendorDTO(null, "Exotic Fruits Inc.");
+        // when
+        when(vendorService.patchVendor(anyLong(), any(VendorDTO.class))).thenReturn(vendorDTO);
+        ResultActions resultActions = mockMvc.perform(patch(VendorController.BASE_URL + "/3")
+                .contentType(APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(vendorDTO)));
+        // then
+        MockHttpServletResponse response = resultActions.andExpect(status().isOk())
+                .andExpect(content().contentType(APPLICATION_JSON))
+                .andExpect(content().json(objectMapper.writeValueAsString(vendorDTO)))
+                .andReturn().getResponse();
+        VendorDTO vendorDTO1 = objectMapper.readValue(response.getContentAsString(), VendorDTO.class);
+        assertEquals(vendorDTO, vendorDTO1);
+    }
+
+    @Test
+    void getVendorById() throws Exception {
+        // given
+        VendorDTO vendorDTO = new VendorDTO(7L, "Awesome Apples Corp");
+        // when
+        when(vendorService.getVendorById(anyLong())).thenReturn(vendorDTO);
+        ResultActions resultActions = mockMvc.perform(get(VendorController.BASE_URL + "/7")
+                .contentType(APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(vendorDTO)));
+        // then
+        MockHttpServletResponse response = resultActions.andExpect(status().isOk())
+                .andExpect(content().contentType(APPLICATION_JSON))
+                .andExpect(content().json(objectMapper.writeValueAsString(vendorDTO)))
+                .andReturn().getResponse();
+        VendorDTO vendorOutput = objectMapper.readValue(response.getContentAsString(), VendorDTO.class);
+        assertEquals(vendorDTO, vendorOutput);
     }
 }

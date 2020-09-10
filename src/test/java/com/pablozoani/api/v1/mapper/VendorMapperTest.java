@@ -4,7 +4,8 @@ import com.pablozoani.api.v1.model.VendorDTO;
 import com.pablozoani.domain.Vendor;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 class VendorMapperTest {
 
@@ -19,5 +20,17 @@ class VendorMapperTest {
         // then
         assertEquals(vendor.getId(), vendorDto.getId());
         assertEquals(vendor.getName(), vendorDto.getName());
+    }
+
+    @Test
+    void dtoToVendor() {
+        // given
+        VendorDTO vendor = new VendorDTO(null, "Western Tasty Fruits Ltd.");
+        // when
+        Vendor vendor1 = vendorMapper.dtoToVendor(vendor);
+        // then
+        assertNotNull(vendor1);
+        assertEquals(vendor.getId(), vendor1.getId());
+        assertEquals(vendor.getName(), vendor1.getName());
     }
 }
