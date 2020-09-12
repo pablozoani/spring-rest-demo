@@ -51,4 +51,10 @@ public class ProductServiceImpl implements ProductService {
     public void deleteProductById(Long id) {
         // TODO
     }
+
+    @Override
+    public ProductDTO getProductById(Long id) {
+        // TODO
+        return null;
+    }
 }

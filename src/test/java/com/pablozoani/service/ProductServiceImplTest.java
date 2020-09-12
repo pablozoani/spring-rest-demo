@@ -66,4 +66,8 @@ class ProductServiceImplTest {
         // TODO
     }
 
+    @Test
+    void getProductById() {
+        // TODO
+    }
 }

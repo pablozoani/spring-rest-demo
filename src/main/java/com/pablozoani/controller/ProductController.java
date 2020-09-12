@@ -29,6 +29,12 @@ public class ProductController {
         return ProductDTOList.of(productService.getAllProducts());
     }
 
+    @GetMapping("/{id}")
+    @ResponseStatus(OK)
+    public ProductDTO getProductById(@PathVariable Long id) {
+        return productService.getProductById(id);
+    }
+
     @PostMapping
     @ResponseStatus(CREATED)
     public ProductDTO createProduct(@RequestBody ProductDTO productDTO) {

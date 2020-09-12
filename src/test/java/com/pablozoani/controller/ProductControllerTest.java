@@ -80,4 +80,9 @@ class ProductControllerTest {
     void deleteProduct() {
         // TODO
     }
+
+    @Test
+    void getProductById() {
+        // TODO
+    }
 }
