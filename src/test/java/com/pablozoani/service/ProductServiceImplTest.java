@@ -45,4 +45,25 @@ class ProductServiceImplTest {
         assertEquals(2, allProducts.size());
         allProducts.forEach(Assertions::assertNotNull);
     }
+
+    @Test
+    void createProduct() {
+        // TODO
+    }
+
+    @Test
+    void updateProduct() {
+        // TODO
+    }
+
+    @Test
+    void patchProduct() {
+        // TODO
+    }
+
+    @Test
+    void deleteProductById() {
+        // TODO
+    }
+
 }

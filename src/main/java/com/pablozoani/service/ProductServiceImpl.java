@@ -28,4 +28,27 @@ public class ProductServiceImpl implements ProductService {
                 .map(productMapper::productToDto)
                 .collect(Collectors.toList());
     }
+
+    @Override
+    public ProductDTO createProduct(ProductDTO productDTO) {
+        // TODO
+        return null;
+    }
+
+    @Override
+    public ProductDTO updateProduct(Long id, ProductDTO productDTO) {
+        // TODO
+        return null;
+    }
+
+    @Override
+    public ProductDTO patchProduct(Long id, ProductDTO productDTO) {
+        // TODO
+        return null;
+    }
+
+    @Override
+    public void deleteProductById(Long id) {
+        // TODO
+    }
 }

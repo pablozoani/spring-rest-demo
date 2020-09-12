@@ -60,4 +60,24 @@ class ProductControllerTest {
         ProductDTOList productDTOList = objectMapper.readValue(response.getContentAsString(), ProductDTOList.class);
         productDTOList.getProducts().forEach(Assertions::assertNotNull);
     }
+
+    @Test
+    void createProduct() {
+        // TODO
+    }
+
+    @Test
+    void updateProduct() {
+        // TODO
+    }
+
+    @Test
+    void patchProduct() {
+        // TODO
+    }
+
+    @Test
+    void deleteProduct() {
+        // TODO
+    }
 }

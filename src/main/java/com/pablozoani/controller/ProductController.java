@@ -1,12 +1,12 @@
 package com.pablozoani.controller;
 
+import com.pablozoani.api.v1.model.ProductDTO;
 import com.pablozoani.api.v1.model.ProductDTOList;
+import com.pablozoani.domain.Product;
 import com.pablozoani.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.*;
 
 import static org.springframework.http.HttpStatus.*;
 
@@ -28,4 +28,30 @@ public class ProductController {
     public ProductDTOList getAllProducts() {
         return ProductDTOList.of(productService.getAllProducts());
     }
+
+    @PostMapping
+    @ResponseStatus(CREATED)
+    public ProductDTO createProduct(@RequestBody ProductDTO productDTO) {
+        return productService.createProduct(productDTO);
+    }
+
+    @PutMapping("/${id}")
+    @ResponseStatus(OK)
+    public ProductDTO updateProduct(@PathVariable Long id, @RequestBody ProductDTO productDTO) {
+        return productService.updateProduct(id, productDTO);
+    }
+
+    @PatchMapping("/${id}")
+    @ResponseStatus(OK)
+    public ProductDTO patchProduct(@PathVariable Long id, @RequestBody ProductDTO productDTO) {
+        return productService.patchProduct(id, productDTO);
+    }
+
+    @DeleteMapping("/${id}")
+    @ResponseStatus(OK)
+    public void deleteProduct(@PathVariable Long id) {
+        productService.deleteProductById(id);
+    }
+
+
 }
