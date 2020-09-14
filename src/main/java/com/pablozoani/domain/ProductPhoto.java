@@ -1,18 +1,18 @@
 package com.pablozoani.domain;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 
+import static javax.persistence.CascadeType.*;
+import static javax.persistence.FetchType.*;
 import static javax.persistence.GenerationType.*;
 
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
+@ToString(exclude = {"photo", "product"})
 @EqualsAndHashCode(exclude = "id")
 public class ProductPhoto {
 
@@ -20,6 +20,13 @@ public class ProductPhoto {
     @GeneratedValue(strategy = IDENTITY)
     private Long id;
 
+    private String fileName;
+
+    private String fileType;
+
     @Lob
-    private Byte[] photo;
+    private byte[] photo;
+
+    @OneToOne(optional = false)
+    private Product product;
 }

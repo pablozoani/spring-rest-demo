@@ -13,5 +13,9 @@ public class ProductPhotoDTO {
 
     private Long id;
 
-    private Byte[] photo;
+    private String fileName;
+
+    private String fileType;
+
+    private byte[] photo;
 }

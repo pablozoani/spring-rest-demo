@@ -2,10 +2,13 @@ package com.pablozoani.service;
 
 import com.pablozoani.api.v1.mapper.ProductMapper;
 import com.pablozoani.api.v1.model.ProductDTO;
+import com.pablozoani.domain.Product;
+import com.pablozoani.exception.ResourceNotFoundException;
 import com.pablozoani.repository.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -31,30 +34,38 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public ProductDTO createProduct(ProductDTO productDTO) {
-        // TODO
-        return null;
+        Product product = productMapper.dtoToProduct(productDTO);
+        product = productRepository.save(product);
+        return productMapper.productToDto(product);
     }
 
     @Override
     public ProductDTO updateProduct(Long id, ProductDTO productDTO) {
-        // TODO
-        return null;
+        productDTO.setId(id);
+        Product product = productMapper.dtoToProduct(productDTO);
+        product = productRepository.save(product);
+        return productMapper.productToDto(product);
     }
 
     @Override
     public ProductDTO patchProduct(Long id, ProductDTO productDTO) {
-        // TODO
-        return null;
+        return productRepository.findById(id).map(product -> {
+            if (productDTO.getName() != null) product.setName(productDTO.getName());
+            if (productDTO.getPrice() != null) product.setPrice(productDTO.getPrice());
+            product = productRepository.save(product);
+            return productMapper.productToDto(product);
+        }).orElseThrow(ResourceNotFoundException::new);
     }
 
     @Override
     public void deleteProductById(Long id) {
-        // TODO
+        productRepository.deleteById(id);
     }
 
     @Override
     public ProductDTO getProductById(Long id) {
-        // TODO
-        return null;
+        Product product = productRepository.findById(id)
+                .orElseThrow(ResourceNotFoundException::new);
+        return productMapper.productToDto(product);
     }
 }

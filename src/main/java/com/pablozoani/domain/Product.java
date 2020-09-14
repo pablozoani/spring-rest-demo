@@ -1,14 +1,11 @@
 package com.pablozoani.domain;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import javax.persistence.*;
 
+import static javax.persistence.CascadeType.*;
+import static javax.persistence.FetchType.LAZY;
 import static javax.persistence.GenerationType.IDENTITY;
 
 @Entity
@@ -25,4 +22,13 @@ public class Product {
     private String name;
 
     private Double price;
+
+    @OneToOne(fetch = LAZY, mappedBy = "product", cascade = {PERSIST, REMOVE})
+    private ProductPhoto productPhoto;
+
+    public Product(Long id, String name, Double price) {
+        this.id = id;
+        this.name = name;
+        this.price = price;
+    }
 }
