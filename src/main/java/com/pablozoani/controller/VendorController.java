@@ -40,7 +40,7 @@ public class VendorController {
 
     @DeleteMapping("/{id}")
     @ResponseStatus(OK)
-    public void deleteVendorById(@PathVariable Long id) {
+    public void deleteVendor(@PathVariable Long id) {
         vendorService.deleteVendorById(id);
     }
 

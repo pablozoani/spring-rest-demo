@@ -9,10 +9,10 @@ spring:
     console:
       enabled: true
   jpa:
-    show-sql: false
+    show-sql: true
     properties:
       hibernate:
-        format_sql: true
+        format_sql: false
       javax:
         persistence:
           schema-generation:

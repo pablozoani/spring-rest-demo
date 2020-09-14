@@ -1,20 +1,21 @@
 package com.pablozoani.bootstrap;
 
-import com.pablozoani.domain.Category;
-import com.pablozoani.domain.Customer;
-import com.pablozoani.domain.Vendor;
-import com.pablozoani.repository.CategoryRepository;
-import com.pablozoani.repository.CustomerRepository;
-import com.pablozoani.repository.VendorRepository;
+import com.pablozoani.domain.*;
+import com.pablozoani.repository.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Profile;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.io.IOException;
+import java.nio.file.Files;
 import java.util.List;
 
 import static java.util.Arrays.asList;
+import static java.util.Arrays.spliterator;
 
 @Slf4j
 @Profile("default")
@@ -27,13 +28,22 @@ public class Bootstrap implements CommandLineRunner {
 
     private final VendorRepository vendorRepository;
 
+    private final ProductRepository productRepository;
+
+    private final ProductPhotoRepository productPhotoRepository;
+
+    private final ResourceLoader resourceLoader;
+
     @Autowired
-    public Bootstrap(CategoryRepository categoryRepository,
-                     CustomerRepository customerRepository,
-                     VendorRepository vendorRepository) {
+    public Bootstrap(CategoryRepository categoryRepository, CustomerRepository customerRepository,
+                     VendorRepository vendorRepository, ProductRepository productRepository,
+                     ProductPhotoRepository productPhotoRepository, ResourceLoader resourceLoader) {
         this.categoryRepository = categoryRepository;
         this.customerRepository = customerRepository;
         this.vendorRepository = vendorRepository;
+        this.productRepository = productRepository;
+        this.productPhotoRepository = productPhotoRepository;
+        this.resourceLoader = resourceLoader;
     }
 
     @Override
@@ -41,6 +51,44 @@ public class Bootstrap implements CommandLineRunner {
         loadCategories();
         loadCustomers();
         loadVendors();
+        loadProducts();
+        loadProductPhotos();
+    }
+
+    private void loadProductPhotos() {
+        ProductPhoto apple = new ProductPhoto(null, "apple.jpg", "image/jpeg",
+                getProductPhotoFromResources("apple.jpg"),
+                productRepository.findByName("Apple Pack").orElse(null));
+        ProductPhoto oranges = new ProductPhoto(null, "oranges.jpg", "image/jpeg",
+                getProductPhotoFromResources("oranges.jpg"),
+                productRepository.findByName("Extra Acid Oranges").orElse(null));
+        ProductPhoto pineapple = new ProductPhoto(null, "pineapple.jpg", "image/jpeg",
+                getProductPhotoFromResources("pineapple.jpg"),
+                productRepository.findByName("Pineapples").orElse(null));
+        List<ProductPhoto> productPhotos = asList(apple, oranges, pineapple);
+        productPhotoRepository.saveAll(productPhotos);
+        log.debug("Data Loaded. " + productPhotoRepository.count() + " product photos saved into the database.");
+    }
+
+    private byte[] getProductPhotoFromResources(String fileName) {
+        try {
+            return Files.readAllBytes(resourceLoader
+                    .getResource("classpath:bootstrap/images/" + fileName)
+                    .getFile()
+                    .toPath());
+        } catch (IOException exc) {
+            exc.printStackTrace();
+            throw new RuntimeException(exc.getMessage());
+        }
+    }
+
+    private void loadProducts() {
+        Product apples = new Product(null, "Apple Pack", 11.0),
+                oranges = new Product(null, "Extra Acid Oranges", 12.0),
+                pineapples = new Product(null, "Pineapples", 18.0);
+        List<Product> products = asList(apples, oranges, pineapples);
+        productRepository.saveAll(products);
+        log.debug("Data Loaded. " + productRepository.count() + " products saved into the database.");
     }
 
     private void loadVendors() {
@@ -50,6 +98,7 @@ public class Bootstrap implements CommandLineRunner {
                 vendor4 = new Vendor(null, "Nuts for Nuts Company");
         List<Vendor> vendors = asList(vendor1, vendor2, vendor3, vendor4);
         vendorRepository.saveAll(vendors);
+        log.debug("Data Loaded. " + vendorRepository.count() + " vendors saved into the database.");
     }
 
     private void loadCategories() {

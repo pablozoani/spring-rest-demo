@@ -110,7 +110,7 @@ class VendorServiceImplTest {
     }
 
     @Test
-    void deleteVendorById() {
+    void deleteVendor() {
         vendorService.deleteVendorById(12L);
         verify(vendorRepository).deleteById(anyLong());
     }

@@ -27,7 +27,7 @@ public class VendorServiceImpl implements VendorService {
     @Override
     public List<VendorDTO> getAllVendors() {
         return vendorRepository.findAll().stream()
-                .map(vendor -> vendorMapper.vendorToDto(vendor))
+                .map(vendorMapper::vendorToDto)
                 .collect(Collectors.toList());
     }
 
