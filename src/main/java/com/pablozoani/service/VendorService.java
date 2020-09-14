@@ -1,5 +1,7 @@
 package com.pablozoani.service;
 
+import com.pablozoani.api.v1.model.ProductDTO;
+import com.pablozoani.api.v1.model.ProductDTOList;
 import com.pablozoani.api.v1.model.VendorDTO;
 
 import java.util.List;
@@ -17,4 +19,8 @@ public interface VendorService {
     VendorDTO updateVendor(Long id, VendorDTO vendorDTO);
 
     void deleteVendorById(Long id);
+
+    ProductDTOList getProductsByVendorId(Long id);
+
+    ProductDTO addProductToVendor(Long id, ProductDTO productDTO);
 }

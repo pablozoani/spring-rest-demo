@@ -3,6 +3,8 @@ package com.pablozoani.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.pablozoani.api.v1.mapper.VendorMapper;
+import com.pablozoani.api.v1.model.ProductDTO;
+import com.pablozoani.api.v1.model.ProductDTOList;
 import com.pablozoani.api.v1.model.VendorDTO;
 import com.pablozoani.api.v1.model.VendorDTOList;
 import com.pablozoani.service.VendorService;
@@ -23,6 +25,7 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
@@ -148,5 +151,26 @@ class VendorControllerTest {
                 .andReturn().getResponse();
         VendorDTO vendorOutput = objectMapper.readValue(response.getContentAsString(), VendorDTO.class);
         assertEquals(vendorDTO, vendorOutput);
+    }
+
+    @Test
+    void deleteVendor() {
+    }
+
+    @Test
+    void getProductsOfVendor() throws Exception {
+        // given
+        ProductDTOList productDTOList = ProductDTOList.of(asList(new ProductDTO(1L, "Apple Pack", 10.0)));
+        given(vendorService.getProductsByVendorId(anyLong())).willReturn(productDTOList);
+        // when
+        ResultActions resultActions = mockMvc.perform(get(VendorController.BASE_URL + "/2/products"));
+        // then
+        resultActions.andExpect(status().isOk())
+                .andExpect(content().json(objectMapper.writeValueAsString(productDTOList)));
+    }
+
+    @Test
+    void addProductToVendor() {
+        // TODO
     }
 }

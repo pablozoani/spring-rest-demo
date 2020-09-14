@@ -8,14 +8,12 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Profile;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.List;
 
 import static java.util.Arrays.asList;
-import static java.util.Arrays.spliterator;
 
 @Slf4j
 @Profile("default")
@@ -83,9 +81,12 @@ public class Bootstrap implements CommandLineRunner {
     }
 
     private void loadProducts() {
-        Product apples = new Product(null, "Apple Pack", 11.0),
-                oranges = new Product(null, "Extra Acid Oranges", 12.0),
-                pineapples = new Product(null, "Pineapples", 18.0);
+        Product apples = new Product(null, "Apple Pack", 11.0, null,
+                vendorRepository.findById(1L).orElseThrow(RuntimeException::new)),
+                oranges = new Product(null, "Extra Acid Oranges", 12.0, null,
+                        vendorRepository.findById(2L).orElseThrow(RuntimeException::new)),
+                pineapples = new Product(null, "Pineapples", 18.0, null,
+                        vendorRepository.findById(3L).orElseThrow(RuntimeException::new));
         List<Product> products = asList(apples, oranges, pineapples);
         productRepository.saveAll(products);
         log.debug("Data Loaded. " + productRepository.count() + " products saved into the database.");

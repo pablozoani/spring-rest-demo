@@ -1,5 +1,7 @@
 package com.pablozoani.controller;
 
+import com.pablozoani.api.v1.model.ProductDTO;
+import com.pablozoani.api.v1.model.ProductDTOList;
 import com.pablozoani.api.v1.model.VendorDTO;
 import com.pablozoani.api.v1.model.VendorDTOList;
 import com.pablozoani.service.VendorService;
@@ -54,5 +56,17 @@ public class VendorController {
     @ResponseStatus(OK)
     public VendorDTO patchVendor(@PathVariable Long id, @RequestBody VendorDTO vendorDTO) {
         return vendorService.patchVendor(id, vendorDTO);
+    }
+
+    @GetMapping("/{id}/products")
+    @ResponseStatus(OK)
+    public ProductDTOList getProductsOfVendor(@PathVariable Long id) {
+        return vendorService.getProductsByVendorId(id);
+    }
+
+    @PostMapping("/{id}/products")
+    @ResponseStatus(CREATED)
+    public ProductDTO addProductToVendor(@PathVariable Long id, @RequestBody ProductDTO productDTO) {
+        return vendorService.addProductToVendor(id, productDTO);
     }
 }

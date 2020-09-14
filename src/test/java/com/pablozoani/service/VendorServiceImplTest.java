@@ -1,22 +1,30 @@
 package com.pablozoani.service;
 
+import com.pablozoani.api.v1.mapper.ProductMapper;
 import com.pablozoani.api.v1.mapper.VendorMapper;
+import com.pablozoani.api.v1.model.ProductDTO;
+import com.pablozoani.api.v1.model.ProductDTOList;
 import com.pablozoani.api.v1.model.VendorDTO;
+import com.pablozoani.domain.Product;
 import com.pablozoani.domain.Vendor;
 import com.pablozoani.exception.ResourceNotFoundException;
+import com.pablozoani.repository.ProductRepository;
 import com.pablozoani.repository.VendorRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import static java.util.Arrays.asList;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
@@ -26,14 +34,19 @@ class VendorServiceImplTest {
     @Mock
     VendorRepository vendorRepository;
 
+    @Mock
+    ProductRepository productRepository;
+
     VendorMapper vendorMapper = VendorMapper.INSTANCE;
+
+    ProductMapper productMapper = ProductMapper.INSTANCE;
 
     VendorService vendorService;
 
     @BeforeEach
     void setUp() {
         initMocks(this);
-        vendorService = new VendorServiceImpl(vendorMapper, vendorRepository);
+        vendorService = new VendorServiceImpl(vendorMapper, productMapper, productRepository, vendorRepository);
     }
 
     @Test
@@ -113,5 +126,43 @@ class VendorServiceImplTest {
     void deleteVendor() {
         vendorService.deleteVendorById(12L);
         verify(vendorRepository).deleteById(anyLong());
+    }
+
+    @Test
+    void deleteVendorById() {
+    }
+
+    @Test
+    void getProductsByVendorId() {
+        // given
+        Set<Product> products = new HashSet<>();
+        products.add(new Product(1L, "Apple Pack", 10.0));
+        Vendor vendor = new Vendor(7L, "Fruit Corp.", products);
+        given(vendorRepository.findById(anyLong())).willReturn(Optional.of(vendor));
+        // when
+        ProductDTOList productsByVendorId = vendorService.getProductsByVendorId(7L);
+        // then
+        assertEquals(1, productsByVendorId.getProducts().size());
+        assertEquals(products.iterator().next().getId(), productsByVendorId.getProducts().get(0).getId());
+        verify(vendorRepository).findById(anyLong());
+    }
+
+    @Test
+    void addProductToVendor() {
+        // given
+        ProductDTO productDTO = new ProductDTO(5L, "Apple Pack", 10.0);
+        Vendor vendor = new Vendor(3L, "Fruit Inc.");
+        given(vendorRepository.findById(anyLong())).willReturn(Optional.of(vendor));
+        given(productRepository.save(any(Product.class))).willReturn(productMapper.dtoToProduct(productDTO));
+        // when
+        ProductDTO result = vendorService.addProductToVendor(5L, productDTO);
+        // then
+        assertEquals(productDTO, result);
+        // and given
+        given(vendorRepository.findById(anyLong())).willReturn(Optional.empty());
+        // when
+        assertThrows(ResourceNotFoundException.class, () -> {
+            vendorService.addProductToVendor(5L, productDTO);
+        });
     }
 }
