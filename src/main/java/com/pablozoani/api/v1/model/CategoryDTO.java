@@ -2,6 +2,7 @@ package com.pablozoani.api.v1.model;
 
 import lombok.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -15,7 +16,7 @@ public class CategoryDTO {
 
     private String name;
 
-    private List<ProductDTO> products;
+    private List<ProductDTO> products = new ArrayList<>();
 
     public CategoryDTO(Long id, String name) {
         this.id = id;

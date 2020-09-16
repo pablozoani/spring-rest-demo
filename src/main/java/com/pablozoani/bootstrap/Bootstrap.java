@@ -90,19 +90,23 @@ public class Bootstrap implements CommandLineRunner {
     private void loadProducts() {
         Product apples = new Product(null, "Apple Pack", 11.0, null,
                 vendorRepository.findById(1L).orElseThrow(RuntimeException::new),
-                categoryRepository.findByName("Fruits")),
+                categoryRepository.findByName("Fruits").orElseThrow(RuntimeException::new)),
                 oranges = new Product(null, "Extra Acid Oranges", 12.0, null,
                         vendorRepository.findById(2L).orElseThrow(RuntimeException::new),
-                        categoryRepository.findByName("Fruits")),
+                        categoryRepository.findByName("Fruits")
+                                .orElseThrow(RuntimeException::new)),
                 pineapples = new Product(null, "Pineapples", 18.0, null,
                         vendorRepository.findById(3L).orElseThrow(RuntimeException::new),
-                        categoryRepository.findByName("Fruits")),
+                        categoryRepository.findByName("Fruits")
+                                .orElseThrow(RuntimeException::new)),
                 driedMix = new Product(null, "Dried Mix", 15.0, null,
                         vendorRepository.findById(1L).orElseThrow(RuntimeException::new),
-                        categoryRepository.findByName("Dried")),
+                        categoryRepository.findByName("Dried")
+                                .orElseThrow(RuntimeException::new)),
                 almonds = new Product(null, "Almonds", 9.0, null,
                         vendorRepository.findById(4L).orElseThrow(RuntimeException::new),
-                        categoryRepository.findByName("Nuts"));
+                        categoryRepository.findByName("Nuts")
+                                .orElseThrow(RuntimeException::new));
         List<Product> products = asList(apples, oranges, pineapples,
                 driedMix, almonds);
         productRepository.saveAll(products);

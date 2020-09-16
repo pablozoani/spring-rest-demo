@@ -6,6 +6,10 @@ import com.pablozoani.service.CustomerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.stream.Collectors;
+
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.HttpStatus.OK;
 
@@ -25,14 +29,19 @@ public class CustomerController {
     @ResponseStatus(OK)
     @GetMapping
     public CustomerListDTO getAllCustomers() {
-        return new CustomerListDTO(customerService.getAllCustomers());
+        return new CustomerListDTO(customerService.getAllCustomers()
+                .stream()
+                .map(dto -> dto.add(linkTo(methodOn(CustomerController.class)
+                        .getCustomerById(dto.getId())).withSelfRel()))
+                .collect(Collectors.toList()));
     }
-
 
     @ResponseStatus(OK)
     @GetMapping(value = "/{id}")
     public CustomerDTO getCustomerById(@PathVariable Long id) {
-        return customerService.getCustomerById(id);
+        return customerService.getCustomerById(id)
+                .add(linkTo(methodOn(CustomerController.class).getAllCustomers())
+                        .withRel("all_customers"));
     }
 
     @ResponseStatus(CREATED)
@@ -43,13 +52,15 @@ public class CustomerController {
 
     @ResponseStatus(OK)
     @PutMapping("/{id}")
-    public CustomerDTO updateCustomer(@PathVariable Long id, @RequestBody CustomerDTO customerDTO) {
+    public CustomerDTO updateCustomer(@PathVariable Long id,
+                                      @RequestBody CustomerDTO customerDTO) {
         return customerService.updateCustomer(id, customerDTO);
     }
 
     @ResponseStatus(OK)
     @PatchMapping("/{id}")
-    public CustomerDTO patchCustomer(@PathVariable Long id, @RequestBody CustomerDTO customerDTO) {
+    public CustomerDTO patchCustomer(@PathVariable Long id,
+                                     @RequestBody CustomerDTO customerDTO) {
         return customerService.patchCustomer(id, customerDTO);
     }
 

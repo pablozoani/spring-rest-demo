@@ -4,9 +4,7 @@ import lombok.*;
 
 import javax.persistence.*;
 
-import static javax.persistence.CascadeType.*;
-import static javax.persistence.FetchType.*;
-import static javax.persistence.GenerationType.*;
+import static javax.persistence.GenerationType.IDENTITY;
 
 @Entity
 @AllArgsConstructor

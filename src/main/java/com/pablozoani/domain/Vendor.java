@@ -26,7 +26,7 @@ public class Vendor {
     @OneToMany(cascade = {PERSIST, REMOVE}, mappedBy = "vendor")
     private Set<Product> products = new HashSet<>();
 
-    public Vendor (Long id, String name) {
+    public Vendor(Long id, String name) {
         this.id = id;
         this.name = name;
     }

@@ -6,6 +6,8 @@ import com.pablozoani.service.CategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 import static org.springframework.http.HttpStatus.OK;
 
 @RestController
@@ -30,6 +32,10 @@ public class CategoryController {
     @ResponseStatus(OK)
     @GetMapping("/{name}")
     public CategoryDTO getCategoryByName(@PathVariable String name) {
-        return categoryService.getCategoryByName(name);
+        CategoryDTO categoryDTO = categoryService.getCategoryByName(name);
+        categoryDTO.getProducts().forEach(productDTO ->
+                productDTO.add(linkTo(methodOn(ProductController.class)
+                        .getProductById(productDTO.getId())).withSelfRel()));
+        return categoryDTO;
     }
 }

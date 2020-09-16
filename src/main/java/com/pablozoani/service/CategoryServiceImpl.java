@@ -3,6 +3,7 @@ package com.pablozoani.service;
 import com.pablozoani.api.v1.mapper.CategoryMapper;
 import com.pablozoani.api.v1.model.CategoryDTO;
 import com.pablozoani.domain.Category;
+import com.pablozoani.exception.ResourceNotFoundException;
 import com.pablozoani.repository.CategoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -33,7 +34,8 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public CategoryDTO getCategoryByName(String name) {
-        Category category = categoryRepository.findByName(name);
+        Category category = categoryRepository.findByName(name)
+                .orElseThrow(ResourceNotFoundException::new);
         return categoryMapper.categoryToDto(category);
     }
 }

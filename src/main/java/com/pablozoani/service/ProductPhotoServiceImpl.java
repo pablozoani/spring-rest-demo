@@ -2,7 +2,6 @@ package com.pablozoani.service;
 
 import com.pablozoani.api.v1.mapper.ProductPhotoMapper;
 import com.pablozoani.api.v1.model.ProductPhotoDTO;
-import com.pablozoani.domain.Product;
 import com.pablozoani.domain.ProductPhoto;
 import com.pablozoani.exception.ResourceNotFoundException;
 import com.pablozoani.repository.ProductPhotoRepository;
@@ -13,7 +12,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import java.io.IOException;
 
 @Slf4j

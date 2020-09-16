@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 
 import java.util.List;
+import java.util.Optional;
 
 import static java.util.Arrays.asList;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -53,7 +54,7 @@ class CategoryServiceImplTest {
         // given
         Category fruits = new Category(1L, "Fruits");
         // when
-        when(categoryRepository.findByName(anyString())).thenReturn(fruits);
+        when(categoryRepository.findByName(anyString())).thenReturn(Optional.of(fruits));
         CategoryDTO categoryDTO = categoryService.getCategoryByName("Fruits");
         // then
         assertNotNull(categoryDTO);
