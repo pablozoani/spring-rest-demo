@@ -63,7 +63,14 @@ public class Bootstrap implements CommandLineRunner {
         ProductPhoto pineapple = new ProductPhoto(null, "pineapple.jpg", "image/jpeg",
                 getProductPhotoFromResources("pineapple.jpg"),
                 productRepository.findByName("Pineapples").orElse(null));
-        List<ProductPhoto> productPhotos = asList(apple, oranges, pineapple);
+        ProductPhoto driedMix = new ProductPhoto(null, "dried_mix.jpg", "image/jpeg",
+                getProductPhotoFromResources("dried_mix.jpg"),
+                productRepository.findByName("Dried Mix").orElse(null));
+        ProductPhoto almonds = new ProductPhoto(null, "almonds.jpg", "image/jpeg",
+                getProductPhotoFromResources("almonds.jpg"),
+                productRepository.findByName("Almonds").orElse(null));
+        List<ProductPhoto> productPhotos = asList(apple, oranges, pineapple,
+                driedMix, almonds);
         productPhotoRepository.saveAll(productPhotos);
         log.debug("Data Loaded. " + productPhotoRepository.count() + " product photos saved into the database.");
     }
@@ -82,12 +89,22 @@ public class Bootstrap implements CommandLineRunner {
 
     private void loadProducts() {
         Product apples = new Product(null, "Apple Pack", 11.0, null,
-                vendorRepository.findById(1L).orElseThrow(RuntimeException::new)),
+                vendorRepository.findById(1L).orElseThrow(RuntimeException::new),
+                categoryRepository.findByName("Fruits")),
                 oranges = new Product(null, "Extra Acid Oranges", 12.0, null,
-                        vendorRepository.findById(2L).orElseThrow(RuntimeException::new)),
+                        vendorRepository.findById(2L).orElseThrow(RuntimeException::new),
+                        categoryRepository.findByName("Fruits")),
                 pineapples = new Product(null, "Pineapples", 18.0, null,
-                        vendorRepository.findById(3L).orElseThrow(RuntimeException::new));
-        List<Product> products = asList(apples, oranges, pineapples);
+                        vendorRepository.findById(3L).orElseThrow(RuntimeException::new),
+                        categoryRepository.findByName("Fruits")),
+                driedMix = new Product(null, "Dried Mix", 15.0, null,
+                        vendorRepository.findById(1L).orElseThrow(RuntimeException::new),
+                        categoryRepository.findByName("Dried")),
+                almonds = new Product(null, "Almonds", 9.0, null,
+                        vendorRepository.findById(4L).orElseThrow(RuntimeException::new),
+                        categoryRepository.findByName("Nuts"));
+        List<Product> products = asList(apples, oranges, pineapples,
+                driedMix, almonds);
         productRepository.saveAll(products);
         log.debug("Data Loaded. " + productRepository.count() + " products saved into the database.");
     }

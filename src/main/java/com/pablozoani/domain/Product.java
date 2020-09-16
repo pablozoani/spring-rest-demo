@@ -10,7 +10,7 @@ import static javax.persistence.GenerationType.IDENTITY;
 
 @Entity
 @Data
-@EqualsAndHashCode(exclude = {"id", "vendor", "productPhoto"})
+@EqualsAndHashCode(exclude = {"id", "vendor", "productPhoto", "category"})
 @NoArgsConstructor
 @AllArgsConstructor
 public class Product {
@@ -28,6 +28,9 @@ public class Product {
 
     @ManyToOne
     private Vendor vendor;
+
+    @ManyToOne
+    private Category category;
 
     public Product(Long id, String name, Double price) {
         this.id = id;
