@@ -36,18 +36,18 @@ public class CustomerController {
                 .collect(Collectors.toList()));
     }
 
+    @ResponseStatus(CREATED)
+    @PostMapping
+    public CustomerDTO createCustomer(@RequestBody CustomerDTO customerDTO) {
+        return customerService.createCustomer(customerDTO);
+    }
+
     @ResponseStatus(OK)
     @GetMapping(value = "/{id}")
     public CustomerDTO getCustomerById(@PathVariable Long id) {
         return customerService.getCustomerById(id)
                 .add(linkTo(methodOn(CustomerController.class).getAllCustomers())
                         .withRel("all_customers"));
-    }
-
-    @ResponseStatus(CREATED)
-    @PostMapping
-    public CustomerDTO createCustomer(@RequestBody CustomerDTO customerDTO) {
-        return customerService.createCustomer(customerDTO);
     }
 
     @ResponseStatus(OK)

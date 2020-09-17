@@ -9,6 +9,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.stream.Collectors;
+
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.HttpStatus.OK;
 
@@ -32,19 +36,30 @@ public class ProductController {
     @GetMapping
     @ResponseStatus(OK)
     public ProductDTOList getAllProducts() {
-        return ProductDTOList.of(productService.getAllProducts());
-    }
-
-    @GetMapping("/{id}")
-    @ResponseStatus(OK)
-    public ProductDTO getProductById(@PathVariable Long id) {
-        return productService.getProductById(id);
+        return ProductDTOList.of(productService.getAllProducts()
+                .stream()
+                .map(productDTO -> productDTO.add(linkTo(methodOn(ProductController.class)
+                        .getProductById(productDTO.getId()))
+                        .withSelfRel()))
+                .collect(Collectors.toList()));
     }
 
     @PostMapping
     @ResponseStatus(CREATED)
     public ProductDTO createProduct(@RequestBody ProductDTO productDTO) {
         return productService.createProduct(productDTO);
+    }
+
+    @GetMapping("/{id}")
+    @ResponseStatus(OK)
+    public ProductDTO getProductById(@PathVariable Long id) {
+        return productService.getProductById(id)
+                .add(linkTo(methodOn(ProductController.class)
+                        .getProductPhotoByProductId(id))
+                        .withRel("product_photo"))
+                .add(linkTo(methodOn(ProductController.class)
+                        .getAllProducts())
+                        .withRel("all_products"));
     }
 
     @PutMapping("/{id}")
