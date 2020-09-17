@@ -4,12 +4,13 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import org.springframework.hateoas.RepresentationModel;
 
 @Data
-@EqualsAndHashCode(exclude = "id")
+@EqualsAndHashCode(exclude = "id", callSuper = false)
 @NoArgsConstructor
 @AllArgsConstructor
-public class VendorDTO {
+public class VendorDTO extends RepresentationModel<VendorDTO> {
 
     private Long id;
 

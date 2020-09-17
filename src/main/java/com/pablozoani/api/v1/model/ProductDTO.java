@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.hateoas.RepresentationModel;
 
 @Data
-@EqualsAndHashCode(exclude = "id")
+@EqualsAndHashCode(exclude = "id", callSuper = false)
 @NoArgsConstructor
 @AllArgsConstructor
 public class ProductDTO extends RepresentationModel<ProductDTO> {

@@ -55,9 +55,6 @@ public class ProductController {
     public ProductDTO getProductById(@PathVariable Long id) {
         return productService.getProductById(id)
                 .add(linkTo(methodOn(ProductController.class)
-                        .getProductPhotoByProductId(id))
-                        .withRel("product_photo"))
-                .add(linkTo(methodOn(ProductController.class)
                         .getAllProducts())
                         .withRel("all_products"));
     }

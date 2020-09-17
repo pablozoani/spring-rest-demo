@@ -5,8 +5,13 @@ import com.pablozoani.api.v1.model.ProductDTOList;
 import com.pablozoani.api.v1.model.VendorDTO;
 import com.pablozoani.api.v1.model.VendorDTOList;
 import com.pablozoani.service.VendorService;
+import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.stream.Collectors;
+
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.HttpStatus.OK;
 
@@ -25,19 +30,26 @@ public class VendorController {
     @GetMapping
     @ResponseStatus(OK)
     public VendorDTOList getAllVendors() {
-        return new VendorDTOList(vendorService.getAllVendors());
-    }
-
-    @GetMapping("/{id}")
-    @ResponseStatus(OK)
-    public VendorDTO getVendorById(@PathVariable Long id) {
-        return vendorService.getVendorById(id);
+        return new VendorDTOList(vendorService.getAllVendors()
+                .stream()
+                .map(vendorDTO -> vendorDTO.add(linkTo(methodOn(VendorController.class)
+                        .getVendorById(vendorDTO.getId())).withSelfRel()))
+                .collect(Collectors.toList()));
     }
 
     @PostMapping
     @ResponseStatus(CREATED)
     public VendorDTO createVendor(@RequestBody VendorDTO vendorDTO) {
         return vendorService.createVendor(vendorDTO);
+    }
+
+    @GetMapping("/{id}")
+    @ResponseStatus(OK)
+    public VendorDTO getVendorById(@PathVariable Long id) {
+        return vendorService.getVendorById(id)
+                .add(linkTo(methodOn(VendorController.class)
+                        .getAllVendors())
+                        .withRel("all_vendors"));
     }
 
     @DeleteMapping("/{id}")
