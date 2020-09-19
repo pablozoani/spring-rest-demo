@@ -6,6 +6,8 @@ Simple REST API
 ## File Tree
 ```
 spring-rest-demo
+ ├─> .circleci
+ │   └── config.yml
  ├── .gitignore
  ├── README.md
  ├── pom.xml
@@ -25,14 +27,10 @@ spring-rest-demo
      │   │           │       │   └── VendorMapper.java
      │   │           │       └─> model
      │   │           │           ├── CategoryDTO.java
-     │   │           │           ├── CategoryListDTO.java
      │   │           │           ├── CustomerDTO.java
-     │   │           │           ├── CustomerListDTO.java
      │   │           │           ├── ProductDTO.java
-     │   │           │           ├── ProductDTOList.java
      │   │           │           ├── ProductPhotoDTO.java
-     │   │           │           ├── VendorDTO.java
-     │   │           │           └── VendorDTOList.java
+     │   │           │           └── VendorDTO.java
      │   │           ├─> bootstrap
      │   │           │   └── Bootstrap.java
      │   │           ├─> controller
@@ -71,7 +69,9 @@ spring-rest-demo
      │       ├── application.yml
      │       └─> bootstrap
      │           └─> images
+     │               ├── almonds.jpg
      │               ├── apple.jpg
+     │               ├── dried_mix.jpg
      │               ├── oranges.jpg
      │               ├── pineapple.jpg
      │               └── strawberry.jpg
