@@ -4,15 +4,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.pablozoani.api.v1.mapper.VendorMapper;
 import com.pablozoani.api.v1.model.ProductDTO;
-import com.pablozoani.api.v1.model.ProductDTOList;
 import com.pablozoani.api.v1.model.VendorDTO;
-import com.pablozoani.api.v1.model.VendorDTOList;
 import com.pablozoani.service.VendorService;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.springframework.hateoas.CollectionModel;
+import org.springframework.hateoas.EntityModel;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
@@ -21,7 +20,6 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import java.util.List;
 
 import static java.util.Arrays.asList;
-import static org.hamcrest.Matchers.hasSize;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -31,7 +29,8 @@ import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 class VendorControllerTest {
 
@@ -61,17 +60,14 @@ class VendorControllerTest {
                 vendor3 = new VendorDTO(null, "Home Fruits");
         List<VendorDTO> vendors = asList(vendor1, vendor2, vendor3);
         objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
-        System.out.println(objectMapper.writeValueAsString(vendors));
         // when
         when(vendorService.getAllVendors()).thenReturn(vendors);
         ResultActions resultActions = mockMvc.perform(get(VendorController.BASE_URL).accept(APPLICATION_JSON));
         // then
         MockHttpServletResponse response = resultActions.andExpect(status().isOk())
                 .andExpect(content().contentType(APPLICATION_JSON))
-                .andExpect(jsonPath("$.vendors", hasSize(vendors.size())))
+                .andExpect(content().json(objectMapper.writeValueAsString(CollectionModel.of(vendors))))
                 .andReturn().getResponse();
-        objectMapper.readValue(response.getContentAsString(), VendorDTOList.class)
-                .getVendors().forEach(Assertions::assertNotNull);
     }
 
     @Test
@@ -147,7 +143,7 @@ class VendorControllerTest {
         // then
         MockHttpServletResponse response = resultActions.andExpect(status().isOk())
                 .andExpect(content().contentType(APPLICATION_JSON))
-                .andExpect(content().json(objectMapper.writeValueAsString(vendorDTO)))
+                .andExpect(content().json(objectMapper.writeValueAsString(EntityModel.of(vendorDTO))))
                 .andReturn().getResponse();
         VendorDTO vendorOutput = objectMapper.readValue(response.getContentAsString(), VendorDTO.class);
         assertEquals(vendorDTO, vendorOutput);
@@ -160,13 +156,15 @@ class VendorControllerTest {
     @Test
     void getProductsOfVendor() throws Exception {
         // given
-        ProductDTOList productDTOList = ProductDTOList.of(asList(new ProductDTO(1L, "Apple Pack", 10.0)));
+        List<ProductDTO> productDTOList = asList(new ProductDTO(1L, "Apple Pack", 10.0));
         given(vendorService.getProductsByVendorId(anyLong())).willReturn(productDTOList);
         // when
-        ResultActions resultActions = mockMvc.perform(get(VendorController.BASE_URL + "/2/products"));
+        ResultActions resultActions = mockMvc.perform(get(VendorController.BASE_URL + "/2/products")
+                .accept("application/hal+json"));
         // then
         resultActions.andExpect(status().isOk())
-                .andExpect(content().json(objectMapper.writeValueAsString(productDTOList)));
+                .andExpect(content().contentType("application/hal+json"))
+                .andExpect(content().json(objectMapper.writeValueAsString(CollectionModel.of(productDTOList))));
     }
 
     @Test

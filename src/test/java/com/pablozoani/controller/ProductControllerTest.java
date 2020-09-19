@@ -2,15 +2,15 @@ package com.pablozoani.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pablozoani.api.v1.model.ProductDTO;
-import com.pablozoani.api.v1.model.ProductDTOList;
 import com.pablozoani.api.v1.model.ProductPhotoDTO;
 import com.pablozoani.service.ProductPhotoService;
 import com.pablozoani.service.ProductService;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.springframework.hateoas.CollectionModel;
+import org.springframework.hateoas.EntityModel;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
@@ -19,7 +19,6 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import java.util.List;
 
 import static java.util.Arrays.asList;
-import static org.hamcrest.Matchers.hasSize;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -30,7 +29,8 @@ import static org.mockito.MockitoAnnotations.initMocks;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.http.MediaType.IMAGE_JPEG_VALUE;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 class ProductControllerTest {
 
@@ -66,10 +66,8 @@ class ProductControllerTest {
         // then
         MockHttpServletResponse response = resultActions.andExpect(status().isOk())
                 .andExpect(content().contentType(APPLICATION_JSON))
-                .andExpect(jsonPath("$.products", hasSize(2)))
+                .andExpect(content().json(objectMapper.writeValueAsString(CollectionModel.of(products))))
                 .andReturn().getResponse();
-        ProductDTOList productDTOList = objectMapper.readValue(response.getContentAsString(), ProductDTOList.class);
-        productDTOList.getProducts().forEach(Assertions::assertNotNull);
         verify(productService).getAllProducts();
     }
 
@@ -141,7 +139,7 @@ class ProductControllerTest {
                 .accept(APPLICATION_JSON));
         resultActions.andExpect(status().isOk())
                 .andExpect(content().contentType(APPLICATION_JSON))
-                .andExpect(content().json(objectMapper.writeValueAsString(product)));
+                .andExpect(content().json(objectMapper.writeValueAsString(EntityModel.of(product))));
         verify(productService).getProductById(anyLong());
     }
 

@@ -1,9 +1,10 @@
 package com.pablozoani.controller;
 
 import com.pablozoani.api.v1.model.CustomerDTO;
-import com.pablozoani.api.v1.model.CustomerListDTO;
 import com.pablozoani.service.CustomerService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.CollectionModel;
+import org.springframework.hateoas.EntityModel;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.stream.Collectors;
@@ -27,9 +28,9 @@ public class CustomerController {
     }
 
     @ResponseStatus(OK)
-    @GetMapping
-    public CustomerListDTO getAllCustomers() {
-        return new CustomerListDTO(customerService.getAllCustomers()
+    @GetMapping(produces = {"application/json", "application/hal+json"})
+    public CollectionModel<CustomerDTO> getAllCustomers() {
+        return CollectionModel.of(customerService.getAllCustomers()
                 .stream()
                 .map(dto -> dto.add(linkTo(methodOn(CustomerController.class)
                         .getCustomerById(dto.getId())).withSelfRel()))
@@ -43,11 +44,11 @@ public class CustomerController {
     }
 
     @ResponseStatus(OK)
-    @GetMapping(value = "/{id}")
-    public CustomerDTO getCustomerById(@PathVariable Long id) {
-        return customerService.getCustomerById(id)
+    @GetMapping(value = "/{id}", produces = {"application/json", "application/hal+json"})
+    public EntityModel<CustomerDTO> getCustomerById(@PathVariable Long id) {
+        return EntityModel.of(customerService.getCustomerById(id)
                 .add(linkTo(methodOn(CustomerController.class).getAllCustomers())
-                        .withRel("all_customers"));
+                        .withRel("all_customers")));
     }
 
     @ResponseStatus(OK)

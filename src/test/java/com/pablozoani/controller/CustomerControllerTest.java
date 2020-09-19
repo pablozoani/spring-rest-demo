@@ -7,6 +7,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.springframework.hateoas.CollectionModel;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
@@ -16,7 +17,6 @@ import java.util.List;
 
 import static java.util.Arrays.asList;
 import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;
@@ -52,11 +52,12 @@ class CustomerControllerTest {
         List<CustomerDTO> customers = asList(pablo, john, clark);
         // when
         when(customerService.getAllCustomers()).thenReturn(customers);
-        ResultActions resultActions = mockMvc.perform(get("/api/v1/customers"));
+        ResultActions resultActions = mockMvc.perform(get("/api/v1/customers")
+                .accept("application/hal+json"));
         // then
         MockHttpServletResponse response = resultActions.andExpect(status().isOk())
-                .andExpect(content().contentType(APPLICATION_JSON))
-                .andExpect(jsonPath("$.customers", hasSize(customers.size())))
+                .andExpect(content().contentType("application/hal+json"))
+                .andExpect(content().json(objectMapper.writeValueAsString(CollectionModel.of(customers))))
                 .andReturn().getResponse();
         response.getHeaderNames()
                 .forEach(header -> System.out.println(header + ": " + response.getHeader(header)));

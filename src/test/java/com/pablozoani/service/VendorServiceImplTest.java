@@ -3,7 +3,6 @@ package com.pablozoani.service;
 import com.pablozoani.api.v1.mapper.ProductMapper;
 import com.pablozoani.api.v1.mapper.VendorMapper;
 import com.pablozoani.api.v1.model.ProductDTO;
-import com.pablozoani.api.v1.model.ProductDTOList;
 import com.pablozoani.api.v1.model.VendorDTO;
 import com.pablozoani.domain.Product;
 import com.pablozoani.domain.Vendor;
@@ -140,10 +139,10 @@ class VendorServiceImplTest {
         Vendor vendor = new Vendor(7L, "Fruit Corp.", products);
         given(vendorRepository.findById(anyLong())).willReturn(Optional.of(vendor));
         // when
-        ProductDTOList productsByVendorId = vendorService.getProductsByVendorId(7L);
+        List<ProductDTO> productsByVendorId = vendorService.getProductsByVendorId(7L);
         // then
-        assertEquals(1, productsByVendorId.getProducts().size());
-        assertEquals(products.iterator().next().getId(), productsByVendorId.getProducts().get(0).getId());
+        assertEquals(1, productsByVendorId.size());
+        assertEquals(products.iterator().next().getId(), productsByVendorId.get(0).getId());
         verify(vendorRepository).findById(anyLong());
     }
 

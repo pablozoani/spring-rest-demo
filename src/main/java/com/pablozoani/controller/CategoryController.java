@@ -1,10 +1,13 @@
 package com.pablozoani.controller;
 
 import com.pablozoani.api.v1.model.CategoryDTO;
-import com.pablozoani.api.v1.model.CategoryListDTO;
 import com.pablozoani.service.CategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.CollectionModel;
+import org.springframework.hateoas.EntityModel;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.stream.Collectors;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
@@ -23,19 +26,24 @@ public class CategoryController {
         this.categoryService = categoryService;
     }
 
-    @GetMapping
+    @GetMapping(produces = {"application/json", "application/hal+json"})
     @ResponseStatus(OK)
-    public CategoryListDTO getAllCategories() {
-        return new CategoryListDTO(categoryService.getAllCategories());
+    public CollectionModel<CategoryDTO> getAllCategories() {
+        return CollectionModel.of(categoryService.getAllCategories()
+                .stream()
+                .map(categoryDTO -> categoryDTO.add(linkTo(methodOn(CategoryController.class)
+                        .getCategoryByName(categoryDTO.getName()))
+                        .withSelfRel()))
+                .collect(Collectors.toList()));
     }
 
     @ResponseStatus(OK)
-    @GetMapping("/{name}")
-    public CategoryDTO getCategoryByName(@PathVariable String name) {
+    @GetMapping(value = "/{name}", produces = {"application/json", "application/hal+json"})
+    public EntityModel<CategoryDTO> getCategoryByName(@PathVariable String name) {
         CategoryDTO categoryDTO = categoryService.getCategoryByName(name);
         categoryDTO.getProducts().forEach(productDTO ->
                 productDTO.add(linkTo(methodOn(ProductController.class)
                         .getProductById(productDTO.getId())).withSelfRel()));
-        return categoryDTO;
+        return EntityModel.of(categoryDTO);
     }
 }

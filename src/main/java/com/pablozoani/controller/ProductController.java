@@ -1,11 +1,12 @@
 package com.pablozoani.controller;
 
 import com.pablozoani.api.v1.model.ProductDTO;
-import com.pablozoani.api.v1.model.ProductDTOList;
 import com.pablozoani.api.v1.model.ProductPhotoDTO;
 import com.pablozoani.service.ProductPhotoService;
 import com.pablozoani.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.CollectionModel;
+import org.springframework.hateoas.EntityModel;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -33,10 +34,10 @@ public class ProductController {
         this.productPhotoService = productPhotoService;
     }
 
-    @GetMapping
+    @GetMapping(produces = {"application/json", "application/hal+json"})
     @ResponseStatus(OK)
-    public ProductDTOList getAllProducts() {
-        return ProductDTOList.of(productService.getAllProducts()
+    public CollectionModel<ProductDTO> getAllProducts() {
+        return CollectionModel.of(productService.getAllProducts()
                 .stream()
                 .map(productDTO -> productDTO.add(linkTo(methodOn(ProductController.class)
                         .getProductById(productDTO.getId()))
@@ -50,13 +51,13 @@ public class ProductController {
         return productService.createProduct(productDTO);
     }
 
-    @GetMapping("/{id}")
+    @GetMapping(value = "/{id}", produces = {"application/json", "application/hal+json"})
     @ResponseStatus(OK)
-    public ProductDTO getProductById(@PathVariable Long id) {
-        return productService.getProductById(id)
+    public EntityModel<ProductDTO> getProductById(@PathVariable Long id) {
+        return EntityModel.of(productService.getProductById(id)
                 .add(linkTo(methodOn(ProductController.class)
                         .getAllProducts())
-                        .withRel("all_products"));
+                        .withRel("all_products")));
     }
 
     @PutMapping("/{id}")

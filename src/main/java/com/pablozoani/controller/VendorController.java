@@ -1,11 +1,10 @@
 package com.pablozoani.controller;
 
 import com.pablozoani.api.v1.model.ProductDTO;
-import com.pablozoani.api.v1.model.ProductDTOList;
 import com.pablozoani.api.v1.model.VendorDTO;
-import com.pablozoani.api.v1.model.VendorDTOList;
 import com.pablozoani.service.VendorService;
-import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
+import org.springframework.hateoas.CollectionModel;
+import org.springframework.hateoas.EntityModel;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.stream.Collectors;
@@ -27,10 +26,10 @@ public class VendorController {
         this.vendorService = vendorService;
     }
 
-    @GetMapping
+    @GetMapping(produces = {"application/json", "application/hal+json"})
     @ResponseStatus(OK)
-    public VendorDTOList getAllVendors() {
-        return new VendorDTOList(vendorService.getAllVendors()
+    public CollectionModel<VendorDTO> getAllVendors() {
+        return CollectionModel.of(vendorService.getAllVendors()
                 .stream()
                 .map(vendorDTO -> vendorDTO.add(linkTo(methodOn(VendorController.class)
                         .getVendorById(vendorDTO.getId())).withSelfRel()))
@@ -43,13 +42,16 @@ public class VendorController {
         return vendorService.createVendor(vendorDTO);
     }
 
-    @GetMapping("/{id}")
+    @GetMapping(value = "/{id}", produces = {"application/json", "application/hal+json"})
     @ResponseStatus(OK)
-    public VendorDTO getVendorById(@PathVariable Long id) {
-        return vendorService.getVendorById(id)
+    public EntityModel<VendorDTO> getVendorById(@PathVariable Long id) {
+        return EntityModel.of(vendorService.getVendorById(id)
                 .add(linkTo(methodOn(VendorController.class)
-                        .getAllVendors())
-                        .withRel("all_vendors"));
+                                .getAllVendors())
+                                .withRel("all_vendors"),
+                        linkTo(methodOn(VendorController.class)
+                                .getProductsOfVendor(id))
+                                .withRel("vendor_products")));
     }
 
     @DeleteMapping("/{id}")
@@ -70,10 +72,15 @@ public class VendorController {
         return vendorService.patchVendor(id, vendorDTO);
     }
 
-    @GetMapping("/{id}/products")
+    @GetMapping(value = "/{id}/products", produces = {"application/json", "application/hal+json"})
     @ResponseStatus(OK)
-    public ProductDTOList getProductsOfVendor(@PathVariable Long id) {
-        return vendorService.getProductsByVendorId(id);
+    public CollectionModel<ProductDTO> getProductsOfVendor(@PathVariable Long id) {
+        return CollectionModel.of(vendorService.getProductsByVendorId(id)
+                .stream()
+                .map(productDTO -> productDTO.add(linkTo(methodOn(ProductController.class)
+                        .getProductById(productDTO.getId()))
+                        .withSelfRel()))
+                .collect(Collectors.toList()));
     }
 
     @PostMapping("/{id}/products")

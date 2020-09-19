@@ -3,7 +3,6 @@ package com.pablozoani.service;
 import com.pablozoani.api.v1.mapper.ProductMapper;
 import com.pablozoani.api.v1.mapper.VendorMapper;
 import com.pablozoani.api.v1.model.ProductDTO;
-import com.pablozoani.api.v1.model.ProductDTOList;
 import com.pablozoani.api.v1.model.VendorDTO;
 import com.pablozoani.domain.Product;
 import com.pablozoani.domain.Vendor;
@@ -80,12 +79,12 @@ public class VendorServiceImpl implements VendorService {
     }
 
     @Override
-    public ProductDTOList getProductsByVendorId(Long id) {
+    public List<ProductDTO> getProductsByVendorId(Long id) {
         return vendorRepository.findById(id).map(vendor -> {
             List<ProductDTO> productDTOS = vendor.getProducts().stream()
                     .map(productMapper::productToDto)
                     .collect(Collectors.toList());
-            return ProductDTOList.of(productDTOS);
+            return productDTOS;
         }).orElseThrow(() -> new ResourceNotFoundException("Vendor " + id + " not found"));
     }
 
