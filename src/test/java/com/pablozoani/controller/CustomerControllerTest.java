@@ -143,4 +143,14 @@ class CustomerControllerTest {
                 .andExpect(status().isOk());
         verify(customerService, times(1)).deleteCustomerById(anyLong());
     }
+
+    @Test
+    void getOrders() {
+        // TODO
+    }
+
+    @Test
+    void createOrder() {
+        // TODO
+    }
 }

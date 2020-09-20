@@ -9,6 +9,7 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Component;
 
+import javax.transaction.Transactional;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.List;
@@ -30,17 +31,24 @@ public class Bootstrap implements CommandLineRunner {
 
     private final ProductPhotoRepository productPhotoRepository;
 
+    private final OrderRepository orderRepository;
+
+    private final ItemRepository itemRepository;
+
     private final ResourceLoader resourceLoader;
 
     @Autowired
     public Bootstrap(CategoryRepository categoryRepository, CustomerRepository customerRepository,
                      VendorRepository vendorRepository, ProductRepository productRepository,
-                     ProductPhotoRepository productPhotoRepository, ResourceLoader resourceLoader) {
+                     ProductPhotoRepository productPhotoRepository, OrderRepository orderRepository,
+                     ItemRepository itemRepository, ResourceLoader resourceLoader) {
         this.categoryRepository = categoryRepository;
         this.customerRepository = customerRepository;
         this.vendorRepository = vendorRepository;
         this.productRepository = productRepository;
         this.productPhotoRepository = productPhotoRepository;
+        this.orderRepository = orderRepository;
+        this.itemRepository = itemRepository;
         this.resourceLoader = resourceLoader;
     }
 
@@ -51,6 +59,40 @@ public class Bootstrap implements CommandLineRunner {
         loadVendors();
         loadProducts();
         loadProductPhotos();
+        loadOrders();
+        loadItems();
+    }
+
+    private void loadItems() {
+        Order order1 = orderRepository.findById(1L).orElseThrow(RuntimeException::new);
+        Item item1 = new Item(null, 5, order1, productRepository.findById(1L)
+                .orElseThrow(RuntimeException::new));
+        Item item2 = new Item(null, 4, order1, productRepository.findById(2L)
+                .orElseThrow(RuntimeException::new));
+        itemRepository.save(item1);
+        itemRepository.save(item2);
+        Order order2 = orderRepository.findById(2L).orElseThrow(RuntimeException::new);
+        Item item3 = new Item(null, 3, order2, productRepository.findById(3L)
+                .orElseThrow(RuntimeException::new));
+        Item item4 = new Item(null, 6, order2, productRepository.findById(4L)
+                .orElseThrow(RuntimeException::new));
+        itemRepository.save(item3);
+        itemRepository.save(item4);
+    }
+
+    @Transactional
+    private void loadOrders() {
+        Order order1 = new Order(State.CREATED);
+        Customer customer1 = customerRepository.findById(1L)
+                .orElseThrow(RuntimeException::new);
+        order1.setCustomer(customer1);
+        orderRepository.save(order1);
+        Order order2 = new Order(State.CREATED);
+        Customer customer2 = customerRepository.findById(2L)
+                .orElseThrow(RuntimeException::new);
+        order2.setCustomer(customer2);
+        orderRepository.save(order2);
+        log.debug("Data Loaded. " + orderRepository.count() + " orders saved into the database.");
     }
 
     private void loadProductPhotos() {

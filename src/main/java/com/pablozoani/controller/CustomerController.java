@@ -1,7 +1,9 @@
 package com.pablozoani.controller;
 
 import com.pablozoani.api.v1.model.CustomerDTO;
+import com.pablozoani.api.v1.model.OrderDTO;
 import com.pablozoani.service.CustomerService;
+import com.pablozoani.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
@@ -22,9 +24,13 @@ public class CustomerController {
 
     private final CustomerService customerService;
 
+    private final OrderService orderService;
+
     @Autowired
-    public CustomerController(CustomerService customerService) {
+    public CustomerController(CustomerService customerService,
+                              OrderService orderService) {
         this.customerService = customerService;
+        this.orderService = orderService;
     }
 
     @ResponseStatus(OK)
@@ -69,5 +75,22 @@ public class CustomerController {
     @DeleteMapping("/{id}")
     public void deleteCustomer(@PathVariable Long id) {
         customerService.deleteCustomerById(id);
+    }
+
+    @ResponseStatus(OK)
+    @GetMapping(value = "/{id}/orders",
+            produces = {"application/json", "application/hal+json"})
+    public CollectionModel<OrderDTO> getOrders(@PathVariable Long id) {
+        return CollectionModel.of(customerService.getOrdersByCustomerId(id));
+    }
+
+    @ResponseStatus(CREATED)
+    @PostMapping(value = "/{id}/orders",
+            consumes = {"application/json", "application/hal+json"})
+    public EntityModel<OrderDTO> createOrder(@PathVariable Long customerId,
+                                             @RequestBody OrderDTO orderDTO) {
+        return EntityModel.of(customerService.createOrder(customerId, orderDTO));
+
+
     }
 }
