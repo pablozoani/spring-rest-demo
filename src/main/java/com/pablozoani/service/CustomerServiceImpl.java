@@ -1,16 +1,24 @@
 package com.pablozoani.service;
 
 import com.pablozoani.api.v1.mapper.CustomerMapper;
+import com.pablozoani.api.v1.mapper.OrderMapper;
 import com.pablozoani.api.v1.model.CustomerDTO;
+import com.pablozoani.api.v1.model.OrderDTO;
 import com.pablozoani.domain.Customer;
+import com.pablozoani.domain.Order;
 import com.pablozoani.exception.ResourceNotFoundException;
 import com.pablozoani.repository.CustomerRepository;
+import com.pablozoani.repository.OrderRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.pablozoani.domain.State.CREATED;
+
+@Slf4j
 @Service
 public class CustomerServiceImpl implements CustomerService {
 
@@ -18,10 +26,16 @@ public class CustomerServiceImpl implements CustomerService {
 
     private final CustomerMapper customerMapper;
 
+    private final OrderRepository orderRepository;
+
+    private final OrderMapper orderMapper;
+
     @Autowired
-    CustomerServiceImpl(CustomerRepository customerRepository, CustomerMapper customerMapper) {
+    CustomerServiceImpl(CustomerRepository customerRepository, CustomerMapper customerMapper, OrderRepository orderRepository, OrderMapper orderMapper) {
         this.customerRepository = customerRepository;
         this.customerMapper = customerMapper;
+        this.orderRepository = orderRepository;
+        this.orderMapper = orderMapper;
     }
 
     @Override
@@ -65,5 +79,26 @@ public class CustomerServiceImpl implements CustomerService {
     @Override
     public void deleteCustomerById(Long id) {
         customerRepository.deleteById(id);
+    }
+
+    @Override
+    public List<OrderDTO> getOrdersByCustomerId(Long id) {
+        return customerRepository.findById(id).map(customer -> customer.getOrders()
+                .stream()
+                .map(orderMapper::orderToDto)
+                .collect(Collectors.toList()))
+                .orElseThrow(() -> new ResourceNotFoundException("Customer " + id + " not found."));
+    }
+
+    @Override
+    public OrderDTO createOrder(Long customerId, OrderDTO orderDTO) {
+        log.debug("createOrder({}, {})", customerId, orderDTO);
+        Order order = orderMapper.dtoToOrder(orderDTO);
+        order.setState(CREATED);
+        Customer customer = customerRepository.findById(customerId)
+                .orElseThrow(() -> new ResourceNotFoundException("Customer " + customerId + " not found"));
+        order.setCustomer(customer);
+        order = orderRepository.save(order);
+        return orderMapper.orderToDto(order);
     }
 }

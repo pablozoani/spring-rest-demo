@@ -1,10 +1,12 @@
 package com.pablozoani.service;
 
 import com.pablozoani.api.v1.mapper.CustomerMapper;
+import com.pablozoani.api.v1.mapper.OrderMapper;
 import com.pablozoani.api.v1.model.CustomerDTO;
 import com.pablozoani.domain.Customer;
 import com.pablozoani.exception.ResourceNotFoundException;
 import com.pablozoani.repository.CustomerRepository;
+import com.pablozoani.repository.OrderRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -24,14 +26,19 @@ class CustomerServiceImplTest {
     @Mock
     CustomerRepository customerRepository;
 
+    @Mock
+    OrderRepository orderRepository;
+
     CustomerMapper customerMapper = CustomerMapper.INSTANCE;
+
+    OrderMapper orderMapper = OrderMapper.INSTANCE;
 
     CustomerService customerService;
 
     @BeforeEach
     void setUp() {
         initMocks(this);
-        customerService = new CustomerServiceImpl(customerRepository, customerMapper);
+        customerService = new CustomerServiceImpl(customerRepository, customerMapper, orderRepository, orderMapper);
     }
 
     @Test
@@ -122,5 +129,15 @@ class CustomerServiceImplTest {
     void deleteCustomerById() {
         customerService.deleteCustomerById(19L);
         verify(customerRepository, times(1)).deleteById(anyLong());
+    }
+
+    @Test
+    void getOrdersByCustomerId() {
+        // TODO
+    }
+
+    @Test
+    void createOrder() {
+        // TODO
     }
 }

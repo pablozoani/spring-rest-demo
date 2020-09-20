@@ -78,7 +78,8 @@ public class ProductController {
         productService.deleteProductById(id);
     }
 
-    @GetMapping(value = "/{id}/photo", produces = "image/jpeg")
+    @GetMapping(value = "/{id}/photo",
+            produces = {"image/jpeg", "image/gif", "image/png"})
     @ResponseStatus(OK)
     public byte[] getProductPhotoByProductId(@PathVariable Long id) {
         return productPhotoService.getProductPhotoByProductId(id).getPhoto();
