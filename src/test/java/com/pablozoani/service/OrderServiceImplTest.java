@@ -10,11 +10,6 @@ class OrderServiceImplTest {
     }
 
     @Test
-    void getAllCustomers() {
-        // TODO
-    }
-
-    @Test
     void getOrderById() {
         // TODO
     }
@@ -46,6 +41,16 @@ class OrderServiceImplTest {
 
     @Test
     void deleteItemByItemIdAndOrderId() {
+        // TODO
+    }
+
+    @Test
+    void getAllOrders() {
+        // TODO
+    }
+
+    @Test
+    void getItemByOrderIdAndItemId() {
         // TODO
     }
 }

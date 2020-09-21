@@ -9,4 +9,6 @@ public interface CategoryService {
     List<CategoryDTO> getAllCategories();
 
     CategoryDTO getCategoryByName(String name);
+
+    CategoryDTO addProductToCategoryByProductIdAndCategoryId(Long categoryId, Long productId);
 }

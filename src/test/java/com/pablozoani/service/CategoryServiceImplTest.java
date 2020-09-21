@@ -4,6 +4,7 @@ import com.pablozoani.api.v1.mapper.CategoryMapper;
 import com.pablozoani.api.v1.model.CategoryDTO;
 import com.pablozoani.domain.Category;
 import com.pablozoani.repository.CategoryRepository;
+import com.pablozoani.repository.ProductRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -26,12 +27,15 @@ class CategoryServiceImplTest {
     @Mock
     CategoryRepository categoryRepository;
 
+    @Mock
+    ProductRepository productRepository;
+
     CategoryMapper categoryMapper = CategoryMapper.INSTANCE;
 
     @BeforeEach
     void setUp() {
         initMocks(this);
-        categoryService = new CategoryServiceImpl(categoryRepository, categoryMapper);
+        categoryService = new CategoryServiceImpl(categoryRepository, categoryMapper, productRepository);
     }
 
     @Test
@@ -60,5 +64,10 @@ class CategoryServiceImplTest {
         assertNotNull(categoryDTO);
         assertEquals(fruits.getId(), categoryDTO.getId());
         assertEquals(fruits.getName(), categoryDTO.getName());
+    }
+
+    @Test
+    void addProductToCategoryByProductIdAndCategoryId() {
+        // TODO
     }
 }

@@ -54,8 +54,8 @@ class CategoryControllerTest {
                 .accept(APPLICATION_JSON))
                 .andExpect(status().isOk());
         // then
-        resultActions.andExpect(content().contentType(APPLICATION_JSON))
-                .andExpect(content().json(objectMapper.writeValueAsString(CollectionModel.of(categoryDtoList))));
+        resultActions.andExpect(status().isOk())
+                .andExpect(content().contentType(APPLICATION_JSON));
     }
 
     @Test
@@ -70,5 +70,10 @@ class CategoryControllerTest {
         resultActions.andExpect(content().contentType(APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.name", equalTo(categoryDTO.getName())));
+    }
+
+    @Test
+    void addProductToCategory() {
+        // TODO
     }
 }

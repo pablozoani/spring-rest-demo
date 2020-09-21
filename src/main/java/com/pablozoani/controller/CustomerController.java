@@ -54,7 +54,10 @@ public class CustomerController {
     public EntityModel<CustomerDTO> getCustomerById(@PathVariable Long id) {
         return EntityModel.of(customerService.getCustomerById(id)
                 .add(linkTo(methodOn(CustomerController.class).getAllCustomers())
-                        .withRel("all_customers")));
+                                .withRel("all_customers"),
+                        linkTo(methodOn(CustomerController.class)
+                                .getCustomerById(id))
+                                .withSelfRel()));
     }
 
     @ResponseStatus(OK)
@@ -81,16 +84,19 @@ public class CustomerController {
     @GetMapping(value = "/{id}/orders",
             produces = {"application/json", "application/hal+json"})
     public CollectionModel<OrderDTO> getOrders(@PathVariable Long id) {
-        return CollectionModel.of(customerService.getOrdersByCustomerId(id));
+        return CollectionModel.of(customerService.getOrdersByCustomerId(id)
+                .stream()
+                .map(orderDTO -> orderDTO.add(linkTo(methodOn(OrderController.class)
+                        .getOrderById(orderDTO.getId()))
+                        .withSelfRel()))
+                .collect(Collectors.toList()));
     }
 
     @ResponseStatus(CREATED)
-    @PostMapping(value = "/{id}/orders",
+    @PostMapping(value = "/{customerId}/orders",
             consumes = {"application/json", "application/hal+json"})
     public EntityModel<OrderDTO> createOrder(@PathVariable Long customerId,
                                              @RequestBody OrderDTO orderDTO) {
         return EntityModel.of(customerService.createOrder(customerId, orderDTO));
-
-
     }
 }

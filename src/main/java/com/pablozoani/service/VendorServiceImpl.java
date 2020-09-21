@@ -46,7 +46,7 @@ public class VendorServiceImpl implements VendorService {
     @Override
     public VendorDTO getVendorById(Long id) {
         return vendorMapper.vendorToDto(vendorRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Vendor " + id + " not found")));
+                .orElseThrow(() -> new ResourceNotFoundException("Vendor " + id + " not found.")));
     }
 
     @Override
@@ -62,7 +62,7 @@ public class VendorServiceImpl implements VendorService {
             if (vendorDTO.getName() != null) vendor.setName(vendorDTO.getName());
             vendor = vendorRepository.save(vendor);
             return vendorMapper.vendorToDto(vendor);
-        }).orElseThrow(() -> new ResourceNotFoundException("Vendor " + id + " not found"));
+        }).orElseThrow(() -> new ResourceNotFoundException("Vendor " + id + " not found."));
     }
 
     @Override
@@ -75,7 +75,11 @@ public class VendorServiceImpl implements VendorService {
 
     @Override
     public void deleteVendorById(Long id) {
-        vendorRepository.deleteById(id);
+        if (vendorRepository.existsById(id)) {
+            vendorRepository.deleteById(id);
+        } else {
+            throw new ResourceNotFoundException("Vendor " + id + " not found.");
+        }
     }
 
     @Override
@@ -85,7 +89,7 @@ public class VendorServiceImpl implements VendorService {
                     .map(productMapper::productToDto)
                     .collect(Collectors.toList());
             return productDTOS;
-        }).orElseThrow(() -> new ResourceNotFoundException("Vendor " + id + " not found"));
+        }).orElseThrow(() -> new ResourceNotFoundException("Vendor " + id + " not found."));
     }
 
     @Override
@@ -95,6 +99,6 @@ public class VendorServiceImpl implements VendorService {
             product.setVendor(vendor);
             product = productRepository.save(product);
             return productMapper.productToDto(product);
-        }).orElseThrow(() -> new ResourceNotFoundException("Vendor " + id + " not found"));
+        }).orElseThrow(() -> new ResourceNotFoundException("Vendor " + id + " not found."));
     }
 }

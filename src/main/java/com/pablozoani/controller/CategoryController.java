@@ -34,7 +34,10 @@ public class CategoryController {
                 .map(categoryDTO -> categoryDTO.add(linkTo(methodOn(CategoryController.class)
                         .getCategoryByName(categoryDTO.getName()))
                         .withSelfRel()))
-                .collect(Collectors.toList()));
+                .collect(Collectors.toList()))
+                .add(linkTo(methodOn(CategoryController.class)
+                        .getAllCategories())
+                        .withSelfRel());
     }
 
     @ResponseStatus(OK)
@@ -44,6 +47,16 @@ public class CategoryController {
         categoryDTO.getProducts().forEach(productDTO ->
                 productDTO.add(linkTo(methodOn(ProductController.class)
                         .getProductById(productDTO.getId())).withSelfRel()));
-        return EntityModel.of(categoryDTO);
+        return EntityModel.of(categoryDTO.add(linkTo(methodOn(CategoryController.class)
+                .getCategoryByName(name))
+                .withSelfRel()));
+    }
+
+    @ResponseStatus(OK)
+    @PutMapping(value = "/{categoryId}/products/{productId}",
+            produces = {"application/json"})
+    public EntityModel<CategoryDTO> addProductToCategory(@PathVariable Long categoryId,
+                                                         @PathVariable Long productId) {
+        return EntityModel.of(categoryService.addProductToCategoryByProductIdAndCategoryId(categoryId, productId));
     }
 }

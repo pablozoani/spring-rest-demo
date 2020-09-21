@@ -23,7 +23,5 @@ public class OrderDTO extends RepresentationModel<OrderDTO> {
 
     private String state;
 
-    private Integer quantity;
-
-    private CustomerDTO customerDTO;
+    private CustomerDTO customer;
 }

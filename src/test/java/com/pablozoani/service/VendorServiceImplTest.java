@@ -122,13 +122,10 @@ class VendorServiceImplTest {
     }
 
     @Test
-    void deleteVendor() {
+    void deleteVendorById() {
+        given(vendorRepository.existsById(anyLong())).willReturn(true);
         vendorService.deleteVendorById(12L);
         verify(vendorRepository).deleteById(anyLong());
-    }
-
-    @Test
-    void deleteVendorById() {
     }
 
     @Test

@@ -10,11 +10,11 @@ import org.springframework.hateoas.RepresentationModel;
 @EqualsAndHashCode(exclude = {"id"}, callSuper = false)
 @AllArgsConstructor
 @NoArgsConstructor
-public class ItemDTO extends RepresentationModel<ItemDTO> {
+public class ItemDTOv2 extends RepresentationModel<ItemDTOv2> {
 
     private Long id;
 
     private Integer quantity;
 
-    private ProductDTO product;
+    private Long productId;
 }

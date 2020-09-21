@@ -3,11 +3,14 @@ package com.pablozoani.service;
 import com.pablozoani.api.v1.mapper.ItemMapper;
 import com.pablozoani.api.v1.mapper.OrderMapper;
 import com.pablozoani.api.v1.model.ItemDTO;
+import com.pablozoani.api.v1.model.ItemDTOv2;
 import com.pablozoani.api.v1.model.OrderDTO;
 import com.pablozoani.domain.Item;
+import com.pablozoani.domain.Product;
 import com.pablozoani.exception.ResourceNotFoundException;
 import com.pablozoani.repository.ItemRepository;
 import com.pablozoani.repository.OrderRepository;
+import com.pablozoani.repository.ProductRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -32,15 +35,19 @@ public class OrderServiceImpl implements OrderService {
 
     private final ItemMapper itemMapper;
 
+    private final ProductRepository productRepository;
+
     @Autowired
     public OrderServiceImpl(OrderMapper orderMapper,
                             OrderRepository orderRepository,
                             ItemRepository itemRepository,
-                            ItemMapper itemMapper) {
+                            ItemMapper itemMapper,
+                            ProductRepository productRepository) {
         this.orderMapper = orderMapper;
         this.orderRepository = orderRepository;
         this.itemRepository = itemRepository;
         this.itemMapper = itemMapper;
+        this.productRepository = productRepository;
     }
 
     @Override
@@ -53,7 +60,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public List<OrderDTO> getAllCustomers() {
+    public List<OrderDTO> getAllOrders() {
         return orderRepository.findAll()
                 .stream()
                 .map(orderMapper::orderToDto)
@@ -71,7 +78,11 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public void deleteOrderById(Long id) {
         log.debug("deleteOrderById({})", id);
-        orderRepository.deleteById(id);
+        if (orderRepository.existsById(id)) {
+            orderRepository.deleteById(id);
+        } else {
+            throw new ResourceNotFoundException("Order " + id + " not found");
+        }
     }
 
     @Override
@@ -118,10 +129,15 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public ItemDTO createItemByOrderId(Long id, ItemDTO itemDTO) {
+    public ItemDTO createItemByOrderId(Long id, ItemDTOv2 itemDTO) {
         return orderRepository.findById(id)
                 .map(order -> {
-                    Item item = itemMapper.dtoToItem(itemDTO);
+                    Product product = productRepository.findById(itemDTO.getProductId())
+                            .orElseThrow(() -> new ResponseStatusException(NOT_FOUND,
+                                    "Product " + id + " not found"));
+                    Item item = new Item();
+                    item.setProduct(product);
+                    item.setQuantity(itemDTO.getQuantity());
                     item.setOrder(order);
                     item = itemRepository.save(item);
                     return itemMapper.itemToDto(item);
@@ -132,7 +148,11 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public void deleteItemByItemIdAndOrderId(Long orderId, Long itemId) {
         log.debug("deleteItemByItemIdAndOrderId({})", itemId);
-        itemRepository.deleteById(itemId);
+        if (itemRepository.existsById(itemId)) {
+            itemRepository.deleteById(itemId);
+        } else {
+            throw new ResourceNotFoundException("Item " + itemId + " not found.");
+        }
     }
 
     @Override

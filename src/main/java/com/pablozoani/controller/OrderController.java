@@ -1,6 +1,7 @@
 package com.pablozoani.controller;
 
 import com.pablozoani.api.v1.model.ItemDTO;
+import com.pablozoani.api.v1.model.ItemDTOv2;
 import com.pablozoani.api.v1.model.OrderDTO;
 import com.pablozoani.service.OrderService;
 import org.springframework.hateoas.CollectionModel;
@@ -29,12 +30,15 @@ public class OrderController {
     @ResponseStatus(OK)
     @GetMapping(produces = {"application/json", "application/hal+json"})
     public CollectionModel<OrderDTO> getAllOrders() {
-        return CollectionModel.of(orderService.getAllCustomers()
+        return CollectionModel.of(orderService.getAllOrders()
                 .stream()
-                .map(orderDTO ->
-                        orderDTO.add(linkTo(methodOn(OrderController.class)
+                .map(orderDTO -> orderDTO
+                        .add(linkTo(methodOn(OrderController.class)
                                 .getOrderById(orderDTO.getId()))
-                                .withSelfRel()))
+                                .withSelfRel())
+                        .add(linkTo(methodOn(CustomerController.class)
+                                .getCustomerById(orderDTO.getCustomer().getId()))
+                                .withRel("customer")))
                 .collect(Collectors.toList()));
     }
 
@@ -74,9 +78,10 @@ public class OrderController {
 
     @ResponseStatus(CREATED)
     @PostMapping(value = "/{id}/items",
-            consumes = {"application/json"})
+            consumes = {"application/json"},
+            produces = {"application/json", "application/hal+json"})
     public EntityModel<ItemDTO> createItemByOrderId(@PathVariable Long id,
-                                                    @RequestBody ItemDTO itemDTO) {
+                                                    @RequestBody ItemDTOv2 itemDTO) {
         return EntityModel.of(orderService.createItemByOrderId(id, itemDTO));
     }
 

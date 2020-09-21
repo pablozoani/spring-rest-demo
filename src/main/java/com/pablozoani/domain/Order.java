@@ -10,6 +10,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import static javax.persistence.CascadeType.PERSIST;
+import static javax.persistence.CascadeType.REMOVE;
 import static javax.persistence.GenerationType.IDENTITY;
 
 @Entity
@@ -37,7 +38,7 @@ public class Order {
     @ManyToOne(optional = false)
     private Customer customer;
 
-    @OneToMany(mappedBy = "order", cascade = PERSIST)
+    @OneToMany(mappedBy = "order", cascade = {PERSIST, REMOVE})
     private Set<Item> items = new HashSet<>();
 
     public Order(State state) {
